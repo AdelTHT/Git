@@ -79,3 +79,34 @@ pipeline {
         echo 'Déploiement production (copie locale)...'
         bat '''
           powershell -NoProfile -ExecutionPolicy Bypass ^
+            if (Test-Path "%DEPLOY_DIR%") { ^
+              Copy-Item -Recurse -Force "%DEPLOY_DIR%" ("%DEPLOY_DIR%_backup_" + (Get-Date -f yyyyMMdd_HHmmss)) ^
+            }
+        '''
+        bat '''
+          powershell -NoProfile -ExecutionPolicy Bypass ^
+            New-Item -ItemType Directory -Force "%DEPLOY_DIR%" | Out-Null
+        '''
+        bat 'robocopy dist "%DEPLOY_DIR%" /MIR >NUL'
+        bat 'dir "%DEPLOY_DIR%"'
+      }
+    }
+
+    stage('Health Check') {
+      steps {
+        echo 'Health check (ex: endpoint si app servie)...'
+        // exemple: bat 'curl -s http://localhost:3000/health'
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Nettoyage léger du workspace...'
+      bat 'rmdir /S /Q staging 2>nul || exit /b 0'
+    }
+    success { echo 'Pipeline exécuté avec succès !' }
+    unstable { echo 'Build instable.' }
+    failure { echo 'Le pipeline a échoué.' }
+  }
+}

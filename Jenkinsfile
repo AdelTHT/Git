@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  tools { nodejs 'node24' }
+  tools { nodejs 'NodeJS-24' }
 
   environment {
     APP_NAME   = 'mon-app-js'

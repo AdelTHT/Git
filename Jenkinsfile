@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  tools { nodejs 'NodeJS-24' }   // Doit matcher le nom configuré dans Jenkins
+  tools { nodejs 'NodeJS-24' }
 
   environment {
     APP_NAME   = 'mon-app-js'
@@ -18,51 +18,48 @@ pipeline {
       }
     }
 
+    stage('Debug') {
+      steps {
+        echo "JOB=${env.JOB_NAME} BRANCH_NAME=${env.BRANCH_NAME} GIT_BRANCH=${env.GIT_BRANCH}"
+      }
+    }
+
     stage('Install Dependencies') {
       steps {
-        echo 'Installation des dépendances Node.js...'
         bat 'node -v & npm -v'
         bat 'npm ci || npm install'
       }
     }
 
     stage('Run Tests') {
-      steps {
-        echo 'Exécution des tests...'
-        bat 'npm test'
-      }
-      post {
-        always {
-          junit 'reports/junit.xml'  // remplace publishTestResults
-        }
-      }
+      steps { bat 'npm test' }
+      post { always { junit 'reports/junit.xml' } }
     }
 
     stage('Code Quality Check') {
-      steps {
-        echo 'Lint JavaScript...'
-        // nécessite eslint + config (sinon rendez non bloquant avec "|| exit /b 0")
-        bat 'npx eslint src --ext .js'
-      }
+      steps { bat 'npx eslint src --ext .js' }
     }
 
     stage('Build') {
       steps {
-        echo 'Construction de l\'application...'
         bat 'npm run build'
         bat 'dir dist'
       }
     }
 
     stage('Security Scan') {
-      steps {
-        echo 'Analyse npm audit (non bloquante si warning)...'
-        bat 'cmd /c npm audit --audit-level=high || exit /b 0'
-      }
+      steps { bat 'cmd /c npm audit --audit-level=high || exit /b 0' }
     }
 
+    /* ====== Déploiements conditionnels pour job Pipeline simple ====== */
+
     stage('Deploy to Staging') {
-      /*when { branch 'develop' }*/
+      when {
+        anyOf {
+          expression { env.BRANCH_NAME == 'develop' }
+          expression { env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'refs/heads/develop' }
+        }
+      }
       steps {
         echo 'Déploiement staging (copie locale)...'
         bat '''
@@ -74,7 +71,12 @@ pipeline {
     }
 
     stage('Deploy to Production') {
-      /*when { branch 'main' }*/
+      when {
+        anyOf {
+          expression { env.BRANCH_NAME == 'main' }
+          expression { env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'refs/heads/main' }
+        }
+      }
       steps {
         echo 'Déploiement production (copie locale)...'
         bat '''
@@ -93,10 +95,7 @@ pipeline {
     }
 
     stage('Health Check') {
-      steps {
-        echo 'Health check (ex: endpoint si app servie)...'
-        // exemple: bat 'curl -s http://localhost:3000/health'
-      }
+      steps { echo 'Health check (ex. curl http://localhost:3000/health si serveur lancé)' }
     }
   }
 

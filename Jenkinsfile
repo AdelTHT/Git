@@ -62,7 +62,7 @@ pipeline {
     }
 
     stage('Deploy to Staging') {
-      when { branch 'develop' }
+      /*when { branch 'develop' }*/
       steps {
         echo 'Déploiement staging (copie locale)...'
         bat '''
@@ -74,7 +74,7 @@ pipeline {
     }
 
     stage('Deploy to Production') {
-      when { branch 'main' }
+      /*when { branch 'main' }*/
       steps {
         echo 'Déploiement production (copie locale)...'
         bat '''

@@ -54,11 +54,11 @@ pipeline {
     /* ====== Déploiements conditionnels pour job Pipeline simple ====== */
 
     stage('Deploy to Staging') {
-      when {
+     /* when {
         anyOf {
           expression { env.BRANCH_NAME == 'develop' }
           expression { env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'refs/heads/develop' }
-        }
+        }*/
       }
       steps {
         echo 'Déploiement staging (copie locale)...'
@@ -71,11 +71,11 @@ pipeline {
     }
 
     stage('Deploy to Production') {
-      when {
+      /*when {
         anyOf {
           expression { env.BRANCH_NAME == 'main' }
           expression { env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'refs/heads/main' }
-        }
+        }*/
       }
       steps {
         echo 'Déploiement production (copie locale)...'

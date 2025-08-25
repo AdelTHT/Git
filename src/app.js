@@ -1,3 +1,4 @@
+/* global addNumbers, subtractNumbers, multiplyNumbers, divideNumbers */
 // Application principale
 document.addEventListener('DOMContentLoaded', function() {
     updateTimestamp();
@@ -49,3 +50,5 @@ function updateTimestamp() {
         timestampElement.textContent = new Date().toLocaleString('fr-FR');
     }
 }
+// Expose pour l’appel onclick dans index.html (et évite le warning ESLint)
+window.calculate = calculate;

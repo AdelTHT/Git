@@ -30,3 +30,24 @@ if (typeof module !== 'undefined' && module.exports) {
         isValidNumber
     };
 }
+// Exposer dans le navigateur (window)
+if (typeof window !== 'undefined') {
+  window.addNumbers = addNumbers;
+  window.subtractNumbers = subtractNumbers;
+  window.multiplyNumbers = multiplyNumbers;
+  window.divideNumbers = divideNumbers;
+  window.isValidNumber = isValidNumber;
+}
+
+// Export pour les tests Node (Jest)
+/* eslint-disable no-undef */
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    addNumbers,
+    subtractNumbers,
+    multiplyNumbers,
+    divideNumbers,
+    isValidNumber
+  };
+}
+/* eslint-enable no-undef */

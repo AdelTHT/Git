@@ -13,6 +13,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
+        deleteDir()      
         echo 'Récupération du code source...'
         checkout scm
       }

@@ -61,7 +61,7 @@ pipeline {
 
     // === PRODUCTION DÉSACTIVÉ POUR L’EXO 1 ===
     stage('Deploy to Production') {
-      when { branch 'main' }
+     /* when { branch 'main' }*/
       steps {
         echo 'Déploiement en production...'
         powershell """

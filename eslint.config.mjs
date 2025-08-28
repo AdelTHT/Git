@@ -1,3 +1,4 @@
+// eslint.config.mjs
 import globals from "globals";
 
 export default [

@@ -45,17 +45,19 @@ pipeline {
 
     // === STAGING TOUJOURS EXÉCUTÉ POUR L'EXO 1 ===
    stage('Deploy to Staging') {
-  when { branch 'develop' } // si tu veux limiter à develop
-  steps {
+    when { branch 'develop' } // optionnel
+    steps {
     echo 'Déploiement staging (copie locale)...'
     powershell '''
-      New-Item -ItemType Directory -Force "C:\staging\$env:APP_NAME" | Out-Null
-      robocopy "dist" "C:\staging\$env:APP_NAME" /MIR | Out-Null
+      $dest = Join-Path -Path 'C:\staging' -ChildPath $env:APP_NAME
+      New-Item -ItemType Directory -Force -Path $dest | Out-Null
+      robocopy 'dist' $dest /MIR | Out-Null
       if ($LASTEXITCODE -lt 8) { exit 0 } else { exit $LASTEXITCODE }
+      Get-ChildItem $dest | Format-Table Name,Length
     '''
-    powershell 'Get-ChildItem "C:\staging\$env:APP_NAME" | Format-Table Name,Length'
   }
 }
+
 
 
     // === PRODUCTION DÉSACTIVÉ POUR L’EXO 1 ===

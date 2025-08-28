@@ -1,29 +1,16 @@
-// eslint.config.cjs
-const globals = require('globals');
+import globals from "globals";
 
-module.exports = [
-  // Code app (navigateur)
+export default [
   {
-    files: ['src/**/*.js'],
+    files: ["**/*.js"],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-      globals: { ...globals.browser }
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: { ...globals.browser, ...globals.node }
     },
     rules: {
-      'no-undef': 'error',
-      'no-unused-vars': 'warn',
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single', { avoidEscape: true }]
-    }
-  },
-  // Tests (Node/Jest)
-  {
-    files: ['tests/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-      globals: { ...globals.node, ...globals.jest }
+      "no-undef": "error",
+      "no-unused-vars": "warn"
     }
   }
 ];

@@ -35,11 +35,11 @@ pipeline {
     stage('Code Quality Check') { steps { bat 'npx eslint src --ext .js' } }
 
     stage('Build') {
-      steps { bat 'npm run build & dir dist' }
+      steps { bat 'npm run build && dir dist' }
     }
 
     stage('Security Scan') {
-      steps { bat 'cmd /c npm audit --audit-level=high || exit /b 0' }
+      steps { bat 'cmd /c "npm audit --audit-level=high || exit /b 0"' }
     }
 
     // === STAGING TOUJOURS EXÉCUTÉ POUR L'EXO 1 ===
@@ -64,11 +64,14 @@ pipeline {
   }
 
   post {
-    always {
-      echo 'Nettoyage léger du workspace...'
-      bat 'rmdir /S /Q staging 2>nul || exit /b 0'
+  always {
+    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+      cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml', onlyStable: false
     }
-    success { echo 'Pipeline exécuté avec succès !' }
-    failure { echo 'Le pipeline a échoué.' }
+    echo 'Nettoyage léger du workspace...'
+    bat 'rmdir /S /Q staging 2>nul || exit /b 0'
   }
+  success { archiveArtifacts artifacts: 'dist/**', fingerprint: true }
+  failure { echo 'Le pipeline a échoué.' }
+}
 }

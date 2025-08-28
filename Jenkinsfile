@@ -45,8 +45,7 @@ pipeline {
 
     // === STAGING TOUJOURS EXÉCUTÉ POUR L'EXO 1 ===
    stage('Deploy to Staging') {
-    when { branch 'develop' } // optionnel
-    steps {
+  steps {
     echo 'Déploiement staging (copie locale)...'
     powershell """
       \$dest = Join-Path -Path 'C:\\staging' -ChildPath \$env:APP_NAME

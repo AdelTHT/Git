@@ -60,9 +60,25 @@ pipeline {
 
 
     // === PRODUCTION DÉSACTIVÉ POUR L’EXO 1 ===
-    /* stage('Deploy to Production') {
-      steps { echo 'Désactivé pour Exercice 1' }
-    } */
+    stage('Deploy to Production') {
+      when { branch 'main' }
+      steps {
+        echo 'Déploiement en production...'
+        powershell """
+          # Sauvegarde de la version précédente
+          if (Test-Path '${DEPLOY_DIR}') {
+            \$backup = '${DEPLOY_DIR}_backup_' + (Get-Date -Format 'yyyyMMdd_HHmmss')
+            Copy-Item '${DEPLOY_DIR}' \$backup -Recurse -Force
+            Write-Host "Backup créé: \$backup"
+          }
+          # Déploiement de la nouvelle version
+          New-Item -ItemType Directory -Force -Path '${DEPLOY_DIR}' | Out-Null
+          robocopy 'dist' '${DEPLOY_DIR}' /MIR | Out-Null
+          if (\$LASTEXITCODE -lt 8) { exit 0 } else { exit \$LASTEXITCODE }
+          Get-ChildItem '${DEPLOY_DIR}' | Format-Table Name,Length
+        """
+      }
+    }
 
     stage('Health Check') { steps { echo 'OK' } }
   }

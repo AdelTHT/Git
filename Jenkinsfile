@@ -44,17 +44,19 @@ pipeline {
     }
 
     // === STAGING TOUJOURS EXÉCUTÉ POUR L'EXO 1 ===
-    stage('Deploy to Staging') {
-      steps {
-        echo 'Déploiement staging (copie locale)...'
-        bat '''
-          powershell -NoProfile -ExecutionPolicy Bypass ^
-            New-Item -ItemType Directory -Force C:\\staging\\%APP_NAME% | Out-Null
-        '''
-        bat 'robocopy dist C:\\staging\\%APP_NAME% /MIR >NUL'
-        bat 'dir C:\\staging\\%APP_NAME%'
-      }
-    }
+   stage('Deploy to Staging') {
+  when { branch 'develop' } // si tu veux limiter à develop
+  steps {
+    echo 'Déploiement staging (copie locale)...'
+    powershell '''
+      New-Item -ItemType Directory -Force "C:\staging\$env:APP_NAME" | Out-Null
+      robocopy "dist" "C:\staging\$env:APP_NAME" /MIR | Out-Null
+      if ($LASTEXITCODE -lt 8) { exit 0 } else { exit $LASTEXITCODE }
+    '''
+    powershell 'Get-ChildItem "C:\staging\$env:APP_NAME" | Format-Table Name,Length'
+  }
+}
+
 
     // === PRODUCTION DÉSACTIVÉ POUR L’EXO 1 ===
     /* stage('Deploy to Production') {

@@ -91,7 +91,17 @@ pipeline {
     echo 'Nettoyage léger du workspace...'
     bat 'rmdir /S /Q staging 2>nul || exit /b 0'
   }
-  success { archiveArtifacts artifacts: 'dist/**', fingerprint: true }
-  failure { echo 'Le pipeline a échoué.' }
+  success {
+    archiveArtifacts artifacts: 'dist/**', fingerprint: true
+    mail to: 'adeltahanout4@gmail.com',
+         subject: "Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+         body: "Le build Jenkins s'est terminé avec succès.\nVoir les détails: ${env.BUILD_URL}"
+  }
+  failure {
+    echo 'Le pipeline a échoué.'
+    mail to: 'adeltahanout4@gmail.com',
+         subject: "Build FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+         body: "Le build Jenkins a échoué.\nVoir les détails: ${env.BUILD_URL}"
+  }
 }
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
+    "coverage": "jest --coverage --coverageReporters=cobertura",
     "build": "rimraf dist && mkdir dist && xcopy src dist /E /I /Y",
     "clean": "rimraf dist node_modules"
   },
